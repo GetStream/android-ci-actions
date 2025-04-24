@@ -1,0 +1,204 @@
+name: Release new version
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Branch or ref to checkout"
+        required: false
+        default: "release"
+        type: string
+      bump:
+        description: "Which part of the version to bump (major, minor, patch)"
+        required: true
+        type: string
+      file-path:
+        description: "Path to Configuration.kt file containing version constants"
+        required: true
+        type: string
+      release-notes:
+        description: "The content of the release notes to be used when publishing the version. If not provided, GitHub will generate release notes automatically based on the commits"
+        required: false
+        default: ""
+        type: string
+      excluded-modules:
+        description: "Comma-separated list of modules to exclude from the build (e.g., 'stream-chat-android-ui-components-sample,stream-chat-android-compose-sample')"
+        type: string
+        required: false
+        default: "stream-chat-android-ui-components-sample,stream-chat-android-compose-sample,stream-chat-android-docs"
+
+    secrets:
+      OSSRH_USERNAME:
+        required: true
+      OSSRH_PASSWORD:
+        required: true
+      SIGNING_KEY_ID:
+        required: true
+      SIGNING_PASSWORD:
+        required: true
+      SIGNING_KEY:
+        required: true
+      SONATYPE_STAGING_PROFILE_ID:
+        required: true
+      STREAM_PUBLIC_BOT_TOKEN:
+        required: true
+
+
+jobs:
+  # Main job that handles the build and publication process
+  publish:
+    name: Release build and publish
+    runs-on: ubuntu-24.04
+    steps:
+      # Checkout the code from the specified branch
+      - name: Check out code
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      
+      # Bump the version using our custom action
+      - uses: GetStream/actions_workflows/actions/bump-version@main
+        id: bump-version
+        with:
+          bump: ${{ inputs.bump }}
+          file-path: ${{ inputs.file-path }}
+      
+      # Commit the version changes
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v8
+        with:
+          add: ${{ inputs.file-path }}
+          message: "AUTOMATION: Version Bump"
+          default_author: github_actions
+          push: false
+      
+      # Push changes to the release branch
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+          branch: release
+          force: true
+      
+      # Setup Java environment
+      - uses: GetStream/actions_workflows/actions/setup-java@main
+      
+      # Build the release version
+      - name: Release build
+        run: |
+          EXCLUDE_ARGS=""
+          if [[ -n "${{ inputs.excluded-modules }}" ]]; then
+            IFS=',' read -ra MODULES <<< "${{ inputs.excluded-modules }}"
+            for module in "${MODULES[@]}"; do
+              module=$(echo "$module" | xargs)
+              if [[ -n "$module" ]]; then
+                EXCLUDE_ARGS="$EXCLUDE_ARGS -x :$module:assembleRelease"
+              fi
+            done
+          fi
+          ./gradlew assembleRelease $EXCLUDE_ARGS
+      
+      # Generate source and documentation JARs
+      - name: Source jar and dokka
+        run: ./gradlew androidSourcesJar javadocJar
+      
+      # Publish to Maven Central
+      - name: Publish to MavenCentral
+        run: ./gradlew publishReleasePublicationToSonatypeRepository --max-workers 1 closeAndReleaseSonatypeStagingRepository
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+     
+      # Create GitHub release
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1.16.0
+        with:
+          artifacts: "release.tar.gz,foo/*.txt"
+          body: ${{ inputs.release-notes != '' && inputs.release-notes || '' }}
+          generateReleaseNotes: ${{ inputs.release-notes == ''}}
+          token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+          tag: ${{ steps.bump-version.outputs.RELEASE_VERSION }}
+          commit: release
+          makeLatest: true
+
+  # Sync release branch with main
+  release_to_main:
+    needs: publish
+    name: Sync main with release
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Sync main
+        run: |
+          git fetch origin release
+          git merge --ff-only origin/release
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+          branch: main
+
+  # Sync main branch with develop
+  main_to_develop:
+    needs: release_to_main
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Sync develop
+        run: |
+          git fetch origin main
+          git merge --no-edit origin/main
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+          branch: develop
+
+# This workflow automates the complete process of releasing a new version:
+# 1. Version bumping
+# 2. Building and publishing to Maven Central
+# 3. Creating GitHub release
+# 4. Branch synchronization (release → main → develop)
+#
+# Required secrets:
+# - OSSRH_USERNAME: Sonatype username
+# - OSSRH_PASSWORD: Sonatype password
+# - SIGNING_KEY_ID: Signing key ID
+# - SIGNING_PASSWORD: Signing key password
+# - SIGNING_KEY: Signing key
+# - SONATYPE_STAGING_PROFILE_ID: Sonatype staging profile ID
+# - STREAM_PUBLIC_BOT_TOKEN: GitHub bot token
+#
+# Example usage:
+# - uses: GetStream/actions_workflows/.github/workflows/release-new-version@main
+#   with:
+#     bump: 'minor'
+#     file-path: 'path/to/Configuration.kt'
+#     excluded-modules: 'sample-app,docs'
+#     release-notes: |
+#       ## What's Changed
+#       * Feature 1
+#       * Bug fix 1
+#       * Feature 2
+#   secrets:
+#     OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+#     OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+#     SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+#     SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+#     SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+#     SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+#     STREAM_PUBLIC_BOT_TOKEN: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}

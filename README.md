@@ -179,6 +179,92 @@ The cache key is based on:
 
 ## Workflows
 
+### Release New Version
+
+This workflow automates the complete process of releasing a new version, including version bumping, building, publishing to Maven Central, creating GitHub releases, and synchronizing branches.
+
+#### Features
+- Version bumping (major/minor/patch)
+- Maven Central publication
+- GitHub release creation
+- Branch synchronization (release → main → develop)
+- Custom changelog support
+- Module exclusion for build
+
+#### Required Secrets
+| Secret | Description |
+|--------|-------------|
+| `OSSRH_USERNAME` | Sonatype username |
+| `OSSRH_PASSWORD` | Sonatype password |
+| `SIGNING_KEY_ID` | Signing key ID |
+| `SIGNING_PASSWORD` | Signing key password |
+| `SIGNING_KEY` | Signing key |
+| `SONATYPE_STAGING_PROFILE_ID` | Sonatype staging profile ID |
+| `STREAM_PUBLIC_BOT_TOKEN` | GitHub bot token |
+
+#### Inputs
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `ref` | Branch or ref to checkout | No | "release" |
+| `bump` | Version bump type (major/minor/patch) | Yes | - |
+| `file-path` | Path to Configuration.kt file containing version constants | Yes | - |
+| `release-notes` | Content of the release notes to be used when publishing | No | "" |
+| `excluded-modules` | Comma-separated list of modules to exclude | No | "stream-chat-android-ui-components-sample,stream-chat-android-compose-sample,stream-chat-android-docs" |
+
+#### Jobs
+
+##### 1. `publish`
+**Purpose**: Builds and publishes the new version
+
+**Steps**:
+1. Checkout code from specified branch
+2. Bump version using custom action
+3. Commit version changes
+4. Push to release branch
+5. Setup Java environment
+6. Build release version (with module exclusions)
+7. Generate source and documentation JARs
+8. Publish to Maven Central
+9. Create GitHub release
+
+##### 2. `release_to_main`
+**Purpose**: Syncs main branch with release
+
+**Steps**:
+1. Checkout main branch
+2. Merge release into main
+3. Push changes to main
+
+##### 3. `main_to_develop`
+**Purpose**: Syncs develop branch with main
+
+**Steps**:
+1. Checkout develop branch
+2. Merge main into develop
+3. Push changes to develop
+
+#### Usage Example
+```yaml
+- uses: GetStream/actions_workflows/.github/workflows/release-new-version@main
+  with:
+    bump: 'minor'
+    file-path: 'path/to/Configuration.kt'
+    excluded-modules: 'sample-app,docs'
+    release-notes: |
+      ## What's Changed
+      * Feature 1
+      * Bug fix 1
+      * Feature 2
+  secrets:
+    OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+    OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+    SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+    SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+    SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+    STREAM_PUBLIC_BOT_TOKEN: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+```
+
 ### Android SDK Size
 
 This workflow measures the size of Android SDK modules and reports the metrics.
