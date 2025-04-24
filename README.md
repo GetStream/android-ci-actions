@@ -4,6 +4,30 @@ This repository contains reusable GitHub Actions and Workflows for GetStream pro
 
 ## Actions
 
+### Setup Java
+
+This action sets up a Java environment with version 17 and Adopt distribution by default. 
+#### Usage
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: GetStream/actions_workflows/actions/setup-java@main
+        with:
+          java-version: '17'      # Optional: Java version (default: 17)
+          distribution: 'adopt'   # Optional: Java distribution (default: adopt)
+```
+
+#### Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `java-version` | Java version to install (e.g., 8, 11, 17, 21) | No | 17 |
+| `distribution` | Java distribution (adopt, temurin, zulu, amazon, microsoft) | No | adopt |
+
 ### Gradle Cache
 
 This action caches Gradle dependencies to speed up your workflow execution. It's designed to be used in any Gradle-based project.
