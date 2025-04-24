@@ -1,0 +1,33 @@
+name: 'Gradle Cache'
+description: 'Caches Gradle Build Cache to improve workflow execution time. This action is reusable in any Gradle project.'
+author: 'GetStream'
+
+inputs:
+  cache-name:
+    description: 'Custom cache name (optional)'
+    required: false
+    default: 'gradle'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          ~/.gradle/daemon
+          ~/.gradle/buildOutputCleanup
+        key: ${{ runner.os }}-${{ inputs.cache-name }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.cache-name }}-
+
+# Usage examples:
+# 1. Basic usage:
+#    - uses: GetStream/actions_workflows/actions/gradle-cache@main
+#
+# 2. With custom cache name:
+#    - uses: GetStream/actions_workflows/actions/gradle-cache@main
+#      with:
+#        cache-name: 'my-workflow'
