@@ -1,0 +1,58 @@
+name: "Version Bumper"
+description: "Bumps major, minor, or patch version in a Kotlin Configuration.kt file. This action is designed for Android projects using Kotlin DSL for version management. The target file must contain version constants in the format: 'const val majorVersion = X', 'const val minorVersion = Y', 'const val patchVersion = Z'."
+author: "GetStream"
+
+inputs:
+  bump:
+    description: "Which part of the version to bump (major, minor, patch)"
+    type: choice
+    required: true
+    options:
+      - major
+      - minor
+      - patch
+  file-path:
+    description: "Path to Configuration.kt file containing the version information. The file must contain 'const val majorVersion', 'const val minorVersion', and 'const val patchVersion' constants."
+    type: string
+    required: true
+
+outputs:
+  RELEASE_VERSION:
+    description: "The new release version after bumping"
+    value: ${{ steps.bump-version-step.outputs.RELEASE_VERSION }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run version bump
+      id: bump-version-step
+      shell: bash
+      run: |
+        chmod +x ${{ github.action_path }}/scripts/bump_version.sh
+        ${{ github.action_path }}/scripts/bump_version.sh "${{ inputs.bump }}" "${{ inputs['file-path'] }}"
+
+# Usage examples:
+# 1. Bump patch version:
+#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#      with:
+#        bump: 'patch'
+#        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'
+#
+# 2. Bump minor version:
+#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#      with:
+#        bump: 'minor'
+#        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'
+#
+# 3. Bump major version:
+#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#      with:
+#        bump: 'major'
+#        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'
+#
+# Required file format:
+# The Configuration.kt file must contain the following version constants:
+#     const val majorVersion = X
+#     const val minorVersion = Y
+#     const val patchVersion = Z
+

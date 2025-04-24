@@ -4,6 +4,46 @@ This repository contains reusable GitHub Actions and Workflows for GetStream pro
 
 ## Actions
 
+### Version Bumper
+
+This action bumps major, minor, or patch version in a Kotlin Configuration.kt file. It's designed for Android projects using Kotlin DSL for version management.
+
+#### Required File Format
+
+The Configuration.kt file must contain the following version constants:
+```kotlin
+const val majorVersion = X
+const val minorVersion = Y
+const val patchVersion = Z
+```
+
+#### Usage
+
+```yaml
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: GetStream/actions_workflows/actions/bump-version@main
+        with:
+          bump: 'patch'  # Required: major, minor, or patch
+          file-path: 'buildSrc/src/main/kotlin/io/getstream/Configuration.kt'  # Required: Path to Configuration.kt
+```
+
+#### Inputs
+
+| Input | Description | Required | Type | Options |
+|-------|-------------|----------|------|---------|
+| `bump` | Which part of the version to bump | Yes | choice | major, minor, patch |
+| `file-path` | Path to Configuration.kt file containing the version information. The file must contain the required version constants. | Yes | string | - |
+
+#### Outputs
+
+| Output | Description |
+|--------|-------------|
+| `RELEASE_VERSION` | The new release version after bumping |
+
 ### Setup Ruby
 
 This action sets up a Ruby environment with version 3.1 by default and enables bundler caching for faster dependency installation.
