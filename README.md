@@ -4,6 +4,37 @@ This repository contains reusable GitHub Actions and Workflows for GetStream pro
 
 ## Actions
 
+### Allure Launch
+
+This action launches Allure TestOps jobs for test reporting and analysis. It's designed to work with Fastlane for test execution and reporting.
+
+#### Usage
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: GetStream/actions_workflows/actions/allure-launch@main
+        with:
+          allure-token: ${{ secrets.ALLURE_TOKEN }}
+          cron: 'false' # Optional: Set to true for scheduled runs
+```
+
+#### Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `allure-token` | Allure TestOps authentication token | Yes | - |
+| `cron` | Indicates if this is a scheduled cron job run | No | false |
+
+#### Environment Variables
+
+The action sets the following environment variables:
+- `ALLURE_TOKEN`: Authentication token for Allure TestOps
+- `GITHUB_EVENT`: GitHub event data in JSON format
+
 ### Enable KVM
 
 This action enables hardware accelerated Android virtualization on Actions Linux larger hosted runners. It's required for running Android emulators in GitHub Actions workflows.
@@ -31,6 +62,7 @@ The action performs the following operations:
 ### Setup Java
 
 This action sets up a Java environment with version 17 and Adopt distribution by default. 
+
 #### Usage
 
 ```yaml

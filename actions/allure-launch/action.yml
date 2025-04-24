@@ -1,0 +1,34 @@
+name: 'Allure Launch'
+description: 'Launches Allure TestOps job for test reporting and analysis. This action is designed to work with Fastlane for test execution and reporting.'
+author: 'GetStream'
+
+inputs:
+  allure-token:
+    description: 'Allure TestOps authentication token'
+    required: true
+  cron:
+    description: 'Indicates if this is a scheduled cron job run'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Launch Allure TestOps
+      run: bundle exec fastlane allure_launch cron:${{ inputs.cron }}
+      shell: bash
+      env:
+        ALLURE_TOKEN: ${{ inputs.allure-token }}
+        GITHUB_EVENT: ${{ toJson(github.event) }}
+
+# Usage examples:
+# 1. Basic usage:
+#    - uses: GetStream/actions_workflows/actions/allure-launch@main
+#      with:
+#        allure-token: ${{ secrets.ALLURE_TOKEN }}
+#
+# 2. In a cron job:
+#    - uses: GetStream/actions_workflows/actions/allure-launch@main
+#      with:
+#        allure-token: ${{ secrets.ALLURE_TOKEN }}
+#        cron: 'true'
