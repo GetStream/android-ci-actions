@@ -4,6 +4,30 @@ This repository contains reusable GitHub Actions and Workflows for GetStream pro
 
 ## Actions
 
+### Enable KVM
+
+This action enables hardware accelerated Android virtualization on Actions Linux larger hosted runners. It's required for running Android emulators in GitHub Actions workflows.
+
+#### Usage
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: GetStream/actions_workflows/actions/enable-kvm@main
+      - name: Run Android tests
+        run: ./gradlew connectedCheck
+```
+
+#### Details
+
+The action performs the following operations:
+- Creates a udev rule for KVM device access
+- Sets appropriate permissions for the KVM group
+- Reloads udev rules to apply changes
+
 ### Setup Java
 
 This action sets up a Java environment with version 17 and Adopt distribution by default. 
