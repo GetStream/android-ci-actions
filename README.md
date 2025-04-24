@@ -4,6 +4,31 @@ This repository contains reusable GitHub Actions and Workflows for GetStream pro
 
 ## Actions
 
+### Setup Ruby
+
+This action sets up a Ruby environment with version 3.1 by default and enables bundler caching for faster dependency installation.
+
+#### Usage
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: GetStream/actions_workflows/actions/setup-ruby@main
+        with:
+          ruby-version: '3.1'     # Optional: Ruby version (default: 3.1)
+          bundler-cache: 'true'   # Optional: Enable bundler caching (default: true)
+```
+
+#### Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `ruby-version` | Ruby version to install (e.g., 3.0, 3.1, 3.2) | No | 3.1 |
+| `bundler-cache` | Whether to cache bundler dependencies | No | true |
+
 ### Allure Launch
 
 This action launches Allure TestOps jobs for test reporting and analysis. It's designed to work with Fastlane for test execution and reporting.
