@@ -58,7 +58,7 @@ jobs:
           persist-credentials: false
       
       # Bump the version using our custom action
-      - uses: GetStream/actions_workflows/actions/bump-version@main
+      - uses: GetStream/android-ci-actions/actions/bump-version@main
         id: bump-version
         with:
           bump: ${{ inputs.bump }}
@@ -82,7 +82,7 @@ jobs:
           force: true
       
       # Setup Java environment
-      - uses: GetStream/actions_workflows/actions/setup-java@main
+      - uses: GetStream/android-ci-actions/actions/setup-java@main
       
       # Build the release version
       - name: Release build
@@ -184,7 +184,7 @@ jobs:
 # - STREAM_PUBLIC_BOT_TOKEN: GitHub bot token
 #
 # Example usage:
-# - uses: GetStream/actions_workflows/.github/workflows/release-new-version@main
+# - uses: GetStream/android-ci-actions/.github/workflows/release-new-version@main
 #   with:
 #     bump: 'minor'
 #     file-path: 'path/to/Configuration.kt'
