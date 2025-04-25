@@ -20,7 +20,6 @@ runs:
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
-        cache: 'true'
 
 # Usage examples:
 # 1. Basic usage (JDK 17 with Adopt):
