@@ -23,14 +23,14 @@ runs:
 
 # Usage examples:
 # 1. Basic usage (JDK 17 with Adopt):
-#    - uses: GetStream/actions_workflows/actions/setup-java@main
+#    - uses: GetStream/android-ci-actions/actions/setup-java@main
 #
 # 2. Specific Java version:
-#    - uses: GetStream/actions_workflows/actions/setup-java@main
+#    - uses: GetStream/android-ci-actions/actions/setup-java@main
 #      with:
 #        java-version: '21'
 #
 # 3. Different distribution:
-#    - uses: GetStream/actions_workflows/actions/setup-java@main
+#    - uses: GetStream/android-ci-actions/actions/setup-java@main
 #      with:
 #        distribution: 'temurin'

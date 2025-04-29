@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/bump-version@main
+      - uses: GetStream/android-ci-actions/actions/bump-version@main
         with:
           bump: 'patch'  # Required: major, minor, or patch
           file-path: 'buildSrc/src/main/kotlin/io/getstream/Configuration.kt'  # Required: Path to Configuration.kt
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/setup-ruby@main
+      - uses: GetStream/android-ci-actions/actions/setup-ruby@main
         with:
           ruby-version: '3.1'     # Optional: Ruby version (default: 3.1)
           bundler-cache: 'true'   # Optional: Enable bundler caching (default: true)
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/allure-launch@main
+      - uses: GetStream/android-ci-actions/actions/allure-launch@main
         with:
           allure-token: ${{ secrets.ALLURE_TOKEN }}
           cron: 'false' # Optional: Set to true for scheduled runs
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/enable-kvm@main
+      - uses: GetStream/android-ci-actions/actions/enable-kvm@main
       - name: Run Android tests
         run: ./gradlew connectedCheck
 ```
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/setup-java@main
+      - uses: GetStream/android-ci-actions/actions/setup-java@main
         with:
           java-version: '17'      # Optional: Java version (default: 17)
           distribution: 'adopt'   # Optional: Java distribution (default: adopt)
@@ -161,7 +161,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: GetStream/actions_workflows/actions/gradle-cache@main
+      - uses: GetStream/android-ci-actions/actions/gradle-cache@main
         with:
           cache-name: 'my-workflow' # Optional: Custom cache name
 ```
@@ -245,7 +245,7 @@ This workflow automates the complete process of releasing a new version, includi
 
 #### Usage Example
 ```yaml
-- uses: GetStream/actions_workflows/.github/workflows/release-new-version@main
+- uses: GetStream/android-ci-actions/.github/workflows/release-new-version@main
   with:
     bump: 'minor'
     file-path: 'path/to/Configuration.kt'
@@ -274,7 +274,7 @@ This workflow measures the size of Android SDK modules and reports the metrics.
 ```yaml
 jobs:
   my-job:
-    uses: GetStream/actions_workflows/.github/workflows/android-sdk-size.yml@main
+    uses: GetStream/android-ci-actions/.github/workflows/android-sdk-size.yml@main
     with:
       modules: "stream-chat-android-client stream-chat-android-compose"
       metricsProject: "stream-chat-android-metrics"

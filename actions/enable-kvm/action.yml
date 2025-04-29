@@ -17,7 +17,7 @@ runs:
 
 # Usage examples:
 # 1. Basic usage:
-#    - uses: GetStream/actions_workflows/actions/enable-kvm@main
+#    - uses: GetStream/android-ci-actions/actions/enable-kvm@main
 #
 # 2. In a workflow with Android emulator:
 #    jobs:
@@ -25,6 +25,6 @@ runs:
 #        runs-on: ubuntu-latest
 #        steps:
 #          - uses: actions/checkout@v4
-#          - uses: GetStream/actions_workflows/actions/enable-kvm@main
+#          - uses: GetStream/android-ci-actions/actions/enable-kvm@main
 #          - name: Run Android tests
 #            run: ./gradlew connectedCheck

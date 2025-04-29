@@ -23,12 +23,12 @@ runs:
 
 # Usage examples:
 # 1. Basic usage:
-#    - uses: GetStream/actions_workflows/actions/allure-launch@main
+#    - uses: GetStream/android-ci-actions/actions/allure-launch@main
 #      with:
 #        allure-token: ${{ secrets.ALLURE_TOKEN }}
 #
 # 2. In a cron job:
-#    - uses: GetStream/actions_workflows/actions/allure-launch@main
+#    - uses: GetStream/android-ci-actions/actions/allure-launch@main
 #      with:
 #        allure-token: ${{ secrets.ALLURE_TOKEN }}
 #        cron: 'true'

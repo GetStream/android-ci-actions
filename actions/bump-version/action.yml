@@ -33,19 +33,19 @@ runs:
 
 # Usage examples:
 # 1. Bump patch version:
-#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#    - uses: GetStream/android-ci-actions/actions/bump-version@main
 #      with:
 #        bump: 'patch'
 #        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'
 #
 # 2. Bump minor version:
-#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#    - uses: GetStream/android-ci-actions/actions/bump-version@main
 #      with:
 #        bump: 'minor'
 #        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'
 #
 # 3. Bump major version:
-#    - uses: GetStream/actions_workflows/actions/bump-version@main
+#    - uses: GetStream/android-ci-actions/actions/bump-version@main
 #      with:
 #        bump: 'major'
 #        file-path: 'stream-chat-android-core/src/main/kotlin/io/getstream/chat/android/core/internal/config/Configuration.kt'

@@ -23,14 +23,14 @@ runs:
 
 # Usage examples:
 # 1. Basic usage (Ruby 3.1 with bundler cache):
-#    - uses: GetStream/actions_workflows/actions/setup-ruby@main
+#    - uses: GetStream/android-ci-actions/actions/setup-ruby@main
 #
 # 2. Specific Ruby version:
-#    - uses: GetStream/actions_workflows/actions/setup-ruby@main
+#    - uses: GetStream/android-ci-actions/actions/setup-ruby@main
 #      with:
 #        ruby-version: '3.2'
 #
 # 3. Without bundler cache:
-#    - uses: GetStream/actions_workflows/actions/setup-ruby@main
+#    - uses: GetStream/android-ci-actions/actions/setup-ruby@main
 #      with:
 #        bundler-cache: 'false'
