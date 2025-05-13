@@ -185,7 +185,9 @@ This workflow automates the complete process of releasing a new version, includi
 
 #### Features
 - Version bumping (major/minor/patch)
-- Maven Central publication
+- Maven Central publication with support for different plugins:
+  - Official Sonatype plugin (io.github.gradle-nexus.publish-plugin)
+  - Alternative plugin (com.vanniktech.maven.publish)
 - GitHub release creation
 - Branch synchronization (release → main → develop)
 - Custom changelog support
@@ -210,6 +212,8 @@ This workflow automates the complete process of releasing a new version, includi
 | `file-path` | Path to Configuration.kt file containing version constants | Yes | - |
 | `release-notes` | Content of the release notes to be used when publishing | No | "" |
 | `excluded-modules` | Comma-separated list of modules to exclude | No | "stream-chat-android-ui-components-sample,stream-chat-android-compose-sample,stream-chat-android-docs" |
+| `documentation-tasks` | Space-separated list of Gradle tasks to generate source and documentation JARs | No | "androidSourcesJar javadocJar" |
+| `use-official-plugin` | Whether to use the official Sonatype plugin (io.github.gradle-nexus.publish-plugin) or the alternative (com.vanniktech.maven.publish) | No | true |
 
 #### Jobs
 
@@ -224,7 +228,7 @@ This workflow automates the complete process of releasing a new version, includi
 5. Setup Java environment
 6. Build release version (with module exclusions)
 7. Generate source and documentation JARs
-8. Publish to Maven Central
+8. Publish to Maven Central using the selected plugin
 9. Create GitHub release
 
 ##### 2. `release_to_main`
@@ -243,7 +247,9 @@ This workflow automates the complete process of releasing a new version, includi
 2. Merge main into develop
 3. Push changes to develop
 
-#### Usage Example
+#### Usage Examples
+
+##### Using the official Sonatype plugin (default):
 ```yaml
 - uses: GetStream/android-ci-actions/.github/workflows/release-new-version@main
   with:
@@ -255,6 +261,24 @@ This workflow automates the complete process of releasing a new version, includi
       * Feature 1
       * Bug fix 1
       * Feature 2
+  secrets:
+    OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+    OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+    SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+    SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+    SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+    SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+    STREAM_PUBLIC_BOT_TOKEN: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+```
+
+##### Using the alternative Maven publish plugin:
+```yaml
+- uses: GetStream/android-ci-actions/.github/workflows/release-new-version@main
+  with:
+    bump: 'minor'
+    file-path: 'path/to/Configuration.kt'
+    use-official-plugin: false
+    documentation-tasks: 'sourcesJar dokkaJar'
   secrets:
     OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
     OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
