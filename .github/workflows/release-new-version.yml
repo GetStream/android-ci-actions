@@ -26,6 +26,11 @@ on:
         type: string
         required: false
         default: "stream-chat-android-ui-components-sample,stream-chat-android-compose-sample,stream-chat-android-docs"
+      documentation-tasks:
+        description: "Space-separated list of Gradle tasks to generate source and documentation JARs (e.g., 'androidSourcesJar javadocJar' or 'sourcesJar dokkaJar')"
+        required: false
+        default: "androidSourcesJar javadocJar"
+        type: string
 
     secrets:
       OSSRH_USERNAME:
@@ -100,8 +105,8 @@ jobs:
           ./gradlew assembleRelease $EXCLUDE_ARGS
       
       # Generate source and documentation JARs
-      - name: Source jar and dokka
-        run: ./gradlew androidSourcesJar javadocJar
+      - name: Generate source JAR and Dokka documentation
+        run: ./gradlew ${{ inputs.documentation-tasks }}
       
       # Publish to Maven Central
       - name: Publish to MavenCentral
