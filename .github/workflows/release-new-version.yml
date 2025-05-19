@@ -83,12 +83,12 @@ jobs:
           default_author: github_actions
           push: false
       
-      # Push changes to the release branch
+      # Push changes to the ci-release branch
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
-          branch: release
+          branch: ci-release
           force: true
       
       # Setup Java environment
@@ -144,7 +144,7 @@ jobs:
           generateReleaseNotes: ${{ inputs.release-notes == ''}}
           token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
           tag: ${{ steps.bump-version.outputs.RELEASE_VERSION }}
-          commit: release
+          commit: ci-release
           makeLatest: true
 
   # Sync release branch with main
@@ -161,7 +161,7 @@ jobs:
       - name: Sync main
         run: |
           git fetch origin release
-          git merge --ff-only origin/release
+          git merge --ff-only origin/ci-release
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
         with:
