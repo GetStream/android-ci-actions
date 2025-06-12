@@ -2,6 +2,7 @@ name: SDK size checks
 
 on:
   workflow_call:
+
     inputs:
       metrics-project:
         required: true
@@ -9,6 +10,16 @@ on:
       modules:
         required: true
         type: string
+
+    secrets:
+      BUILD_CACHE_AWS_REGION:
+        required: true
+      BUILD_CACHE_AWS_BUCKET:
+        required: true
+      BUILD_CACHE_AWS_ACCESS_KEY_ID:
+        required: true
+      BUILD_CACHE_AWS_SECRET_KEY:
+        required: true
 
 env:
   METRICS_PROJECT: ${{ inputs.metrics-project }}
@@ -34,6 +45,11 @@ jobs:
 
       - name: Assemble release for metrics
         run: ./gradlew :metrics:$METRICS_PROJECT:assembleRelease
+        env:
+          BUILD_CACHE_AWS_REGION: ${{ secrets.BUILD_CACHE_AWS_REGION }}
+          BUILD_CACHE_AWS_BUCKET: ${{ secrets.BUILD_CACHE_AWS_BUCKET }}
+          BUILD_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_CACHE_AWS_ACCESS_KEY_ID }}
+          BUILD_CACHE_AWS_SECRET_KEY: ${{ secrets.BUILD_CACHE_AWS_SECRET_KEY }}
 
       - name: Get current SDK sizes
         run: |
