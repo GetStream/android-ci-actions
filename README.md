@@ -289,7 +289,7 @@ This workflow automates the complete process of releasing a new version, includi
     STREAM_PUBLIC_BOT_TOKEN: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
 ```
 
-### Android SDK Size
+### SDK Size Checks
 
 This workflow measures the size of Android SDK modules and reports the metrics.
 
@@ -298,12 +298,12 @@ This workflow measures the size of Android SDK modules and reports the metrics.
 ```yaml
 jobs:
   my-job:
-    uses: GetStream/android-ci-actions/.github/workflows/android-sdk-size.yml@main
+    uses: GetStream/android-ci-actions/.github/workflows/sdk-size-checks.yml@main
     with:
       modules: "stream-chat-android-client stream-chat-android-compose"
-      metricsProject: "stream-chat-android-metrics"
+      metrics-project: "stream-chat-android-metrics"
 ```
 
 #### Requirements
 
-**ℹ️ Make sure to set up a metrics project with build favors that match with the module. See an example in the [Chat SDK](https://github.com/GetStream/stream-chat-android/blob/develop/metrics/stream-chat-android-metrics/build.gradle.kts)**
+**ℹ️ Make sure to set up a metrics project with build flavors that match with the module. See examples in [Chat SDK](https://github.com/GetStream/stream-chat-android/blob/develop/metrics/stream-chat-android-metrics/build.gradle.kts) and [Video SDK](https://github.com/GetStream/stream-video-android/blob/develop/metrics/stream-video-android-metrics/build.gradle.kts)**
