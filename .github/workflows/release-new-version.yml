@@ -160,7 +160,7 @@ jobs:
           persist-credentials: false
       - name: Sync main
         run: |
-          git fetch origin release
+          git fetch origin ci-release
           git merge --ff-only origin/ci-release
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
