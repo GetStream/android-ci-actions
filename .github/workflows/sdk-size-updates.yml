@@ -12,6 +12,8 @@ on:
         type: string
 
     secrets:
+      GITHUB_TOKEN:
+        required: true
       BUILD_CACHE_AWS_REGION:
         required: true
       BUILD_CACHE_AWS_BUCKET:
@@ -22,10 +24,6 @@ on:
         required: true
 
 env:
-  BUILD_CACHE_AWS_REGION: ${{ secrets.BUILD_CACHE_AWS_REGION }}
-  BUILD_CACHE_AWS_BUCKET: ${{ secrets.BUILD_CACHE_AWS_BUCKET }}
-  BUILD_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_CACHE_AWS_ACCESS_KEY_ID }}
-  BUILD_CACHE_AWS_SECRET_KEY: ${{ secrets.BUILD_CACHE_AWS_SECRET_KEY }}
   METRICS_PROJECT: ${{ inputs.metrics-project }}
   METRICS_FILE: "metrics/size.json"
   MODULES: ${{ inputs.modules }}
@@ -111,5 +109,5 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ env.BRANCH_NAME }}
