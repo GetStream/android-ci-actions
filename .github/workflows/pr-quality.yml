@@ -6,8 +6,7 @@ env:
   PR_QUALITY_ANCHOR: "<!-- pr-quality-anchor -->"
 
 on:
-  pull_request:
-    types: [opened, edited, synchronize, labeled, unlabeled, reopened]
+  workflow_call:
 
 permissions:
   contents: read
