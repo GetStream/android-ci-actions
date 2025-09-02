@@ -20,7 +20,7 @@ jobs:
       DAYS_INACTIVE: "15"
       EXEMPT_LABELS: "pr:keep-open" # keep-open shall be done in EXTREME cases.
       CLOSE_COMMENT: |
-        This draft pull request had no activity for over 30 days and is being **auto-closed** to keep the queue tidy. 
+        This draft pull request had no activity for over 15 days and is being **auto-closed** to keep the queue tidy. 
         
         If you plan to continue, please reopen the PR or open a new one when it’s ready for review.
     steps:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const days = parseInt(process.env.DAYS_INACTIVE || "30", 10);
+            const days = parseInt(process.env.DAYS_INACTIVE || "15", 10);
             const cutoff = new Date(Date.now() - days*24*60*60*1000);
             const exempt = new Set((process.env.EXEMPT_LABELS || "")
               .split(",").map(s => s.trim()).filter(Boolean).map(s => s.toLowerCase()));
