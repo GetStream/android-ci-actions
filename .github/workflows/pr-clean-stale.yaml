@@ -2,9 +2,7 @@
 name: Close stale draft PRs
 
 on:
-  schedule:
-    - cron: "0 7 * * 1"  # every Monday 09:00 CEST (UTC+2)
-  workflow_dispatch:  # allow manual runs
+  workflow_call:
 
 permissions:
   contents: read
