@@ -17,7 +17,7 @@ jobs:
   close-stale-drafts:
     runs-on: ubuntu-latest
     env:
-      DAYS_INACTIVE: "30"
+      DAYS_INACTIVE: "15"
       EXEMPT_LABELS: "pr:keep-open" # keep-open shall be done in EXTREME cases.
       CLOSE_COMMENT: |
         This draft pull request had no activity for over 30 days and is being **auto-closed** to keep the queue tidy. 
