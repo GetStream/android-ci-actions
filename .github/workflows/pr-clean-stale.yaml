@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   issues: write
 
@@ -14,53 +14,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  close-stale-drafts:
+  stale:
     runs-on: ubuntu-latest
-    env:
-      DAYS_INACTIVE: "15"
-      EXEMPT_LABELS: "pr:keep-open" # keep-open shall be done in EXTREME cases.
-      CLOSE_COMMENT: |
-        This draft pull request had no activity for over 15 days and is being **auto-closed** to keep the queue tidy. 
-        
-        If you plan to continue, please reopen the PR or open a new one when it’s ready for review.
+
     steps:
-      - name: Close inactive draft PRs
-        uses: actions/github-script@v7
+      - name: "Mark and close stale PRs"
+        uses: actions/stale@v9
         with:
-          script: |
-            const days = parseInt(process.env.DAYS_INACTIVE || "15", 10);
-            const cutoff = new Date(Date.now() - days*24*60*60*1000);
-            const exempt = new Set((process.env.EXEMPT_LABELS || "")
-              .split(",").map(s => s.trim()).filter(Boolean).map(s => s.toLowerCase()));
-
-            const { owner, repo } = context.repo;
-
-            const allOpenPRs = await github.paginate(github.rest.pulls.list, {
-              owner, repo, state: "open", per_page: 100
-            });
-
-            const staleDrafts = allOpenPRs.filter(pr => {
-              if (!pr.draft) return false;
-              if (new Date(pr.updated_at) >= cutoff) return false;
-              const labels = (pr.labels || []).map(l => (typeof l === "string" ? l : l.name) || "").map(n => n.toLowerCase());
-              return !labels.some(l => exempt.has(l));
-            });
-
-            if (staleDrafts.length === 0) {
-              core.info("No stale draft PRs to close ✅");
-              return;
-            }
-
-            core.info(`Closing ${staleDrafts.length} stale draft PR(s)…`);
-            for (const pr of staleDrafts) {
-              try {
-                await github.rest.issues.createComment({
-                  owner, repo, issue_number: pr.number, body: process.env.CLOSE_COMMENT
-                });
-                await github.rest.issues.update({
-                  owner, repo, issue_number: pr.number, state: "closed"
-                });
-              } catch (err) {
-                core.warning(`Failed to close #${pr.number}: ${err.message}`);
-              }
-            }
+          days-before-pr-stale: 14
+          days-before-pr-close: 7
+          stale-pr-message: "This pull request has been automatically marked as stale because it has been inactive for 14 days. It will be closed in 7 days if no further activity occurs."
+          close-pr-message: "This pull request was closed because it has been stalled for 7 days with no activity. Please reopen if you still intend to submit this change."
+          exempt-pr-labels: 'pr:keep-open'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-stale: -1 # skip marking issues as stale
+          days-before-close: -1 # skip closing issues
