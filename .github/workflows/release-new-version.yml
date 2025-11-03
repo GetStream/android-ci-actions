@@ -66,14 +66,14 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           persist-credentials: false
-      
+
       # Bump the version using our custom action
       - uses: GetStream/android-ci-actions/actions/bump-version@main
         id: bump-version
         with:
           bump: ${{ inputs.bump }}
           file-path: ${{ inputs.file-path }}
-      
+
       # Commit the version changes
       - name: Commit changes
         uses: EndBug/add-and-commit@v9.1.4
@@ -82,7 +82,7 @@ jobs:
           message: "AUTOMATION: Version Bump"
           default_author: github_actions
           push: false
-      
+
       # Push changes to the ci-release branch
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
@@ -90,10 +90,10 @@ jobs:
           github_token: ${{ secrets.STREAM_PUBLIC_BOT_TOKEN }}
           branch: ci-release
           force: true
-      
+
       # Setup Java environment
       - uses: GetStream/android-ci-actions/actions/setup-java@main
-      
+
       # Build the release version
       - name: Release build
         run: |
@@ -108,11 +108,11 @@ jobs:
             done
           fi
           ./gradlew assembleRelease $EXCLUDE_ARGS
-      
+
       # Generate source and documentation JARs
       - name: Generate source JAR and Dokka documentation
         run: ./gradlew ${{ inputs.documentation-tasks }}
-      
+
       # Publish to Maven Central
       - name: Publish to MavenCentral
         if: ${{ inputs.use-official-plugin }}
@@ -134,6 +134,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_RELEASE_SIGNING_ENABLED: true
 
       # Create GitHub release
       - name: Create Github Release
