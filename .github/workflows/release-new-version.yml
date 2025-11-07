@@ -49,7 +49,7 @@ on:
       SIGNING_KEY:
         required: true
       SONATYPE_STAGING_PROFILE_ID:
-        required: true
+        required: false
       STREAM_PUBLIC_BOT_TOKEN:
         required: true
 
