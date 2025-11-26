@@ -13,13 +13,13 @@ on:
 
     secrets:
       BUILD_CACHE_AWS_REGION:
-        required: true
+        required: false
       BUILD_CACHE_AWS_BUCKET:
-        required: true
+        required: false
       BUILD_CACHE_AWS_ACCESS_KEY_ID:
-        required: true
+        required: false
       BUILD_CACHE_AWS_SECRET_KEY:
-        required: true
+        required: false
 
 env:
   METRICS_PROJECT: ${{ inputs.metrics-project }}
